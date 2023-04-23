@@ -8,72 +8,98 @@
 import SwiftUI
 
 struct ContentView: View {
-    let buttons = ["Random Puzzle", "Select Puzzle", "Next Puzzle", "Previous Puzzle"]
-    @State private var selectView = false
-    
+    // random, select, next, previous
     var body: some View {
         NavigationView {
             ZStack {
-                Color.yellow.edgesIgnoringSafeArea(.all)
-                Image("akari_background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+                LinearGradient(colors: [.yellow, .black],
+                               startPoint: .topLeading,
+                               endPoint: .bottomTrailing)
+                .edgesIgnoringSafeArea(.all)
                 VStack {
-                    LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
-                        ForEach(0..<buttons.count, id: \.self) { index in
-                            Button(action: {
-                                // Action for each button
-                                print("\(buttons[index]) tapped")
-                                if buttons[index] == "Select Puzzle" {
-                                    selectView = true
-                                }
-                            }) {
-                                Text(buttons[index])
-                                    .foregroundColor(.black)
-                                    .font(.title)
-                                    .fontWeight(.semibold)
-                                    .padding(10)
-                                    .background(Color.yellow)
-                                    .cornerRadius(10)
-                            }
-                        }
-                        .padding() // Add padding around buttons
-                        .padding(.top, 16) // Add padding to top of buttons
+                    NavigationLink(destination: selectPuzzleView()) {
+                        Text("Select Puzzle")
                     }
-                    .padding(.bottom, 14.3)
+                    .font(.headline)
+                    Divider().background(Color.black)
+                    NavigationLink(destination: PuzzleView(puzzle: Int.random(in: 1...5))) {
+                        Text("Random Puzzle")
+                    }
+                    .font(.headline)
+                    Divider().background(Color.black)
+                    NavigationLink(destination: InstructionsView()) {
+                        Text("Instructions")
+                    }
+                    .font(.headline)
                 }
+                .padding(.vertical)
+                .foregroundColor(.black)
+                .background(Color.white)
+                .navigationBarTitle("Akari")
             }
-            .sheet(isPresented: $selectView, content: {
-                SelectPuzzle()
-            })
-            .navigationBarHidden(true)
         }
     }
 }
 
-struct SelectPuzzle: View {
+struct InstructionsView: View {
     var body: some View {
         ZStack {
-            Color.yellow.edgesIgnoringSafeArea(.all) // Fill entire view with black color
-            Image("akari_background")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-            VStack(spacing: 16) {
-                ForEach(1...5, id: \.self) { index in
-                    Button(action: {
-                        // Action for each button
-                        print("Puzzle \(index) tapped")
-                    }) {
-                        Text("Puzzle \(index)") // Set button title
+            LinearGradient(colors: [.yellow, .black],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+            .edgesIgnoringSafeArea(.all)
+            VStack {
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .frame(height: 50)
+                        .padding(.horizontal)
+                    HStack {
+                        Text("How to play Akari!")
+                            .font(.largeTitle)
                             .foregroundColor(.black)
-                            .font(.title)
                             .fontWeight(.semibold)
-                            .padding(10)
-                            .background(Color.yellow)
-                            .cornerRadius(10)
+                            .padding(25)
                     }
                 }
+                .edgesIgnoringSafeArea(.top)
+                .padding()
+                Text("Akari is a puzzle and logic game, below is an example for reference. There's a 2d board containing 3 types of tiles: Corridors, Walls, and Clues. Your aim is to place lamps on the Corridors (white tiles) to fill the board with light. Walls and Clues will not be lit up. Clue tiles display the number of lamps that must be placed in their adjacent Corridor tiles to solve the puzzle. While you can place a lamp in every Corridor, the puzzle will not be solved if any lamp is in view of another's light. Good luck!")
+                    .padding()
+                    .foregroundColor(Color.white)
+                    .background(Color.black)
+                Image("akari_background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                Spacer()
             }
+        }
+    }
+}
+
+struct selectPuzzleView: View {
+    
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: [.yellow, .black],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+            .edgesIgnoringSafeArea(.all)
+            VStack (spacing: 30){
+                Divider()
+                ForEach(1..<6) { index in
+                    NavigationLink(destination: PuzzleView(puzzle: index)) {
+                        Text("Puzzle \(index)")
+                    }
+                    .cornerRadius(20)
+                    .padding()
+                    Divider().background(Color.black)
+                }
+            }
+            .foregroundColor(.black)
+            .background(Color.white)
+            .font(.headline)
         }
     }
 }
